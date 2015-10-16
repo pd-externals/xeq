@@ -1,0 +1,6 @@
+*~
+*.o
+*.gz
+*.html
+*.out
+sofi.*

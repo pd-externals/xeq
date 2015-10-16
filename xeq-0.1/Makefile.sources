@@ -1,0 +1,13 @@
+CX_SOURCES = \
+xeq.c
+
+LX_SOURCES = \
+xeq_host.c \
+xeq_parse.c \
+xeq_polyparse.c \
+xeq_record.c \
+xeq_follow.c \
+xeq_data.c \
+xeq_polytempo.c \
+xeq_time.c \
+xeq_query.c

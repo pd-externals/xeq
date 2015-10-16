@@ -1,0 +1,10 @@
+OTHER_SOURCES = \
+sq.c \
+dict.c \
+bifi.c \
+mifi.c \
+mfbb.c \
+sofi.c \
+hyphen.c \
+text.c \
+vefl.c

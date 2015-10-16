@@ -1,0 +1,5 @@
+0 q loop 0 4510;
+4500 q loop 4500 9000;
+4500 q loop 9000 13500;
+4500 q loop 13500 18000;
+4500 q rewind, flush;
