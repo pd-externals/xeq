@@ -7,9 +7,8 @@ shared/bifi.c \
 shared/mifi.c \
 shared/mfbb.c \
 shared/hyphen.c \
-shared/text.c 
-#\
-#shared/vefl.c
+shared/text.c \
+shared/vefl.c
              
 xeqsources = \
 src/xeq.c \
@@ -23,7 +22,16 @@ src/xeq_query.c \
 src/xeq_record.c \
 src/xeq_time.c
 
-xeq.class.sources = $(xeqsources) $(shared)
+xeq.class.sources        = $(xeqsources) $(shared)
+xeq_data.class.sources   = $(xeqsources) $(shared)
+xeq_follow.class.sources = $(xeqsources) $(shared)
+xeq_host.class.sources   = $(xeqsources) $(shared)
+xeq_parse.class.sources  = $(xeqsources) $(shared)
+xeq_polyparse.class.sources = $(xeqsources) $(shared)
+xeq_polytempo.class.sources = $(xeqsources) $(shared)
+xeq_query.class.sources  = $(xeqsources) $(shared)
+xeq_record.class.sources = $(xeqsources) $(shared)
+xeq_time.class.sources   = $(xeqsources) $(shared)
 
 cflags = -I./shared
 
