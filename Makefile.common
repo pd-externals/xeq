@@ -4,7 +4,7 @@ include Makefile.objects
 CC = gcc
 
 # next line has to be edited manually
-PD_DIR = ../../../pd/src
+PD_DIR = ../../pd-0.47-1/src
 
 SHARED_DIR = $(ROOT_DIR)/shared
 OBJ_DIR = .
@@ -48,7 +48,7 @@ WARN_CFLAGS =  -Wall -W -Wstrict-prototypes   \
 DBG_CFLAGS = 
 
 CFLAGS = $(WARN_CFLAGS) $(OPT_CFLAGS) $(DEFINES) $(INCLUDES)
-LFLAGS = -export_dynamic  -shared
+LFLAGS = -export-dynamic  -shared
 
 BLXTERNS = $(foreach fn,$(LX_SOURCES:.c=.$(X_SUFFIX)),$(OUT_DIR)/$(fn))
 CLXTERNS = $(foreach fn,$(CX_CLASSES:=.$(X_SUFFIX)),$(OUT_DIR)/$(fn))
@@ -60,8 +60,7 @@ EXTERNS = $(CXTERNS) $(AXTERNS) $(LXTERNS)
 
 default: define_build all
 
-$(foreach fn,$(CX_SELFNAMES:.c=.$(X_SUFFIX)),$(OUT_DIR)/$(fn)): \
-		$(OUT_DIR)/%.$(X_SUFFIX) : $(CX_DIR)%.o
+$(foreach fn,$(CX_SELFNAMES:.c=.$(X_SUFFIX)),$(OUT_DIR)/$(fn)): $(OUT_DIR)/%.$(X_SUFFIX) : $(CX_DIR)%.o
 	$(CC) -o $@ $(CFLAGS) $(LFLAGS) $+
 
 # for control externs being part of a signal collection (linedrive)
@@ -106,7 +105,7 @@ $(OUT_DIR)/%~.$(X_SUFFIX): $(AX_DIR)%.c $(OBJECTS)
 
 # generic rule for control externals
 $(OUT_DIR)/%.$(X_SUFFIX): $(CX_DIR)%.c $(OBJECTS)
-	$(CC) -o $@ $(CFLAGS) $(LFLAGS) $(OBJECTS) $<
+	$(CC) -o $@ $(CFLAGS) $(LFLAGS) $(OBJECTS)
 
 define_build:
 	@if [[ -f build_counter && \
