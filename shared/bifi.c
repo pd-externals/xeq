@@ -41,6 +41,7 @@ static int ambigendian(void)
 /* two helpers from d_soundfile.c */
 uint32 bifi_swap4(uint32 n)
 {
+//    printf("bifi_swap4; %02X, %02X, %02X, %02X\n", ((n & 0xff000000) >> 24), (n & 0xff0000) >> 16, ((n & 0xff00) >> 8), ((n & 0xff)));
     if (bifi_swapping)
     	return (((n & 0xff) << 24) | ((n & 0xff00) << 8) |
 		((n & 0xff0000) >> 8) | ((n & 0xff000000) >> 24));
@@ -109,6 +110,7 @@ t_bifi *bifi_new(t_bifi *x, char *hdr, size_t hdrsz)
 void bifi_free(t_bifi *x)
 {
     if (x->b_fp) fclose(x->b_fp);
+    x->b_fp = 0;
     if (x->b_hdralloc) freebytes(x->b_header, x->b_headersize);
     if (x->b_selfalloc) freebytes(x, sizeof(*x));
 }

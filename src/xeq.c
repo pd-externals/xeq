@@ -1217,8 +1217,10 @@ static void xeq_mfread(t_xeq *x, t_symbol *s, int ac, t_atom *av)
     filename = av->a_w.w_symbol;
     if (ac > 1 && !(tts = squtt_makesymbol(av + 1))) return;
     if (mfbb_read(x->x_binbuf, filename->s_name,
-		  canvas_getdir(x->x_canvas)->s_name, tts))
+		  canvas_getdir(x->x_canvas)->s_name, tts)) {
 	error("%s: read failed", filename->s_name);
+	return;
+    }
     xeq_rewind(x);
     hyphen_forallfriends((t_hyphen *)x, xeqhook_multicast_rewind, 0);
 }
