@@ -172,15 +172,18 @@ static int mifi_read_start_track(t_mifi_stream *x)
     long skip;
     int notyet = 1;
     do {
-	if (fread(&header, 1,
-		  MIFI_TRACKHEADER_SIZE, x->s_fp) < MIFI_TRACKHEADER_SIZE)
+	int readResult = fread(&header, 1, MIFI_TRACKHEADER_SIZE, x->s_fp);
+//	printf("mifi_read_start_track; readResult = %d, should be %d\n", readResult, MIFI_TRACKHEADER_SIZE);
+	if (readResult < MIFI_TRACKHEADER_SIZE)
 	    goto nomoretracks;
+	mifi_fix_track_header((char *)&header);
 	header.h_length = bifi_swap4(header.h_length);
+//	printf("mifi_read_start_track; header.h_length: %d (%X) - %d\n", header.h_length, header.h_length, bifi_swap4(header.h_length));
 	if (strncmp(header.h_type, "MTrk", 4))
 	{
 	    char buf[5];
 	    strncpy(buf, header.h_type, 4);
-	    buf[5] = '\0';
+	    buf[4] = '\0';
 	    if (x->s_anapass)
 		post("unknown chunk %s in midifile -- skipped", buf);
 	}
@@ -301,7 +304,19 @@ void mifi_fix_header(t_mifi_header *header)
     header->h_division = tmpHeader.h_division;
 }
 
+// Another kludge. As expected, it duplicates code
+void mifi_fix_track_header(t_mifi_header *header)
+{
+    t_mifi_trackheader tmpHeader;
 
+    char *headerChars = (char *)header;
+    unsigned int i;
+    for (i = 0; i < sizeof(header->h_type); i++) {
+	tmpHeader.h_type[i] = headerChars[i];
+    }
+    tmpHeader.h_length  = headerChars[4]   | (headerChars[5] << 8) | (headerChars[6] << 16) | (headerChars[7] << 24);
+    header->h_length   = tmpHeader.h_length;
+}
 
 /* Open midifile for reading, parse the header.  May be used as t_mifi_stream
    allocator (if x is a null pointer), to be freed by mifi_read_end() or
@@ -333,13 +348,13 @@ t_mifi_stream *mifi_read_start(t_mifi_stream *x,
     header.h_format   = bifi_swap2(header.h_format);
     header.h_ntracks  = bifi_swap2(header.h_ntracks);
     header.h_division = bifi_swap2(header.h_division);
-    printf("mifi_read_start; h_length: %d, h_format: %d, h_ntracks: %d, h_division: %d\n", 
-        header.h_length, header.h_format, header.h_ntracks, header.h_division);
+//    printf("mifi_read_start; h_length: %d, h_format: %d, h_ntracks: %d, h_division: %d\n", 
+//        header.h_length, header.h_format, header.h_ntracks, header.h_division);
     if (header.h_length < MIFI_HEADERDATA_SIZE)
 	goto badheader;
     if (skip = header.h_length - MIFI_HEADERDATA_SIZE)
     {
-	printf("\nmifi_read_start; %ld extra bytes of midifile header (%ld) -- skipped\n", skip, header.h_length);
+//	printf("\nmifi_read_start; %ld extra bytes of midifile header (%ld) -- skipped\n", skip, header.h_length);
 	post("%ld extra bytes of midifile header -- skipped", skip);
 	if (fseek(bp->b_fp, skip, SEEK_CUR) < 0) {
 	    result = 0;
@@ -370,7 +385,7 @@ t_mifi_stream *mifi_read_start(t_mifi_stream *x,
 
     return (result);
 badheader:
-    printf("mifi_read_start; \'%s/%s\' is not a valid midifile\n", dirname, filename);
+//    printf("mifi_read_start; \'%s/%s\' is not a valid midifile\n", dirname, filename);
     post("`%s\' is not a valid midifile", filename);
 badstart:
     if (result && !x) mifi_stream_free(result);
@@ -406,6 +421,7 @@ int mifi_read_event(t_mifi_stream *x, t_mifi_event *e)
 
     x->s_newtrack = 0;
 nextattempt:
+//printf("mifi_read_event; x->s_bytesleft = %d\n", x->s_bytesleft);
     if (x->s_bytesleft < MIFI_SHORTEST_EVENT && !mifi_read_start_track(x))
 	return (MIFI_READ_EOF);
 
@@ -558,8 +574,10 @@ int mifi_read_analyse(t_mifi_stream *x, t_squtt *tt)
 
     while ((evtype = mifi_read_event(x, evp)) >= MIFI_READ_SKIP)
     {
-	if (evtype == MIFI_READ_SKIP)
+	if (evtype == MIFI_READ_SKIP) {
+//	    printf("mifi_read_analyse; evtype == MIFI_READ_SKIP (%d == %d)\n", evtype, MIFI_READ_SKIP);
 	    continue;
+        }
 	if (x->s_newtrack)
 	{
 #ifdef MIFI_VERBOSE
@@ -571,6 +589,7 @@ int mifi_read_analyse(t_mifi_stream *x, t_squtt *tt)
 	}
 	if (MIFI_IS_CHANNEL(evtype))
 	{
+//	    printf("MIFI_IS_CHANNEL(evtype) %d\n", evtype);
 	    if (newtrack)
 	    {
 		newtrack = 0;
