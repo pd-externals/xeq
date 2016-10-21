@@ -153,6 +153,7 @@ static void *xeq_polyparse_new(t_symbol *seqname, t_symbol *refname,
 	(t_xeq_polyparse *)xeq_derived_new(xeq_polyparse_class, (int)f,
 					   seqname, refname,
 					   (t_method)xeq_polyparse_tick);
+    printf("xeq_derived_new() ok\n");
     t_xeq *base;
     int i, nlayers;
     if (!x) return (0);
@@ -479,7 +480,8 @@ void xeq_polyparse_dosetup(void)
 				    (t_newmethod)xeq_polyparse_new,
 				    (t_method)xeq_polyparse_free,
 				    sizeof(t_xeq_polyparse),
-				    0, A_DEFFLOAT, A_DEFSYM, A_DEFSYM, 0);
+//				    0, A_DEFFLOAT, A_DEFSYM, A_DEFSYM, 0);
+				    0, A_DEFSYM, A_DEFSYM, A_DEFFLOAT, 0);
     class_addcreator((t_newmethod)xeq_polyparse_new,
 		     gensym("xeq-polyparse"),
 		     A_DEFFLOAT, A_DEFSYM, A_DEFSYM, 0);
@@ -528,6 +530,7 @@ void xeq_polyparse_dosetup(void)
 		    gensym("find"), A_GIMME, 0);
     class_addmethod(xeq_polyparse_class, (t_method)xeq_polyparse_find,
 		    gensym("event"), A_GIMME, 0);
+    printf("xeq_polyparse_dosetup; complete\n");
 }
 
 void xeq_polyparse_setup(void)

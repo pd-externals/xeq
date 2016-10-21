@@ -176,7 +176,7 @@ static int mifi_read_start_track(t_mifi_stream *x)
 //	printf("mifi_read_start_track; readResult = %d, should be %d\n", readResult, MIFI_TRACKHEADER_SIZE);
 	if (readResult < MIFI_TRACKHEADER_SIZE)
 	    goto nomoretracks;
-	mifi_fix_track_header((char *)&header);
+	mifi_fix_track_read_header((char *)&header);
 	header.h_length = bifi_swap4(header.h_length);
 //	printf("mifi_read_start_track; header.h_length: %d (%X) - %d\n", header.h_length, header.h_length, bifi_swap4(header.h_length));
 	if (strncmp(header.h_type, "MTrk", 4))
@@ -276,7 +276,7 @@ void mifi_event_free(t_mifi_event *e)
 
 // Kludge to get the file header in the struct. Modern compilers tend to 
 //  align values, preventing a direct copy from the file.
-void mifi_fix_header(t_mifi_header *header)
+void mifi_fix_read_header(t_mifi_header *header)
 {
     // header:
     //   char    h_type[4];   0-3
@@ -305,7 +305,7 @@ void mifi_fix_header(t_mifi_header *header)
 }
 
 // Another kludge. As expected, it duplicates code
-void mifi_fix_track_header(t_mifi_header *header)
+void mifi_fix_track_read_header(t_mifi_header *header)
 {
     t_mifi_trackheader tmpHeader;
 
@@ -316,6 +316,59 @@ void mifi_fix_track_header(t_mifi_header *header)
     }
     tmpHeader.h_length  = headerChars[4]   | (headerChars[5] << 8) | (headerChars[6] << 16) | (headerChars[7] << 24);
     header->h_length   = tmpHeader.h_length;
+}
+
+// More kludges for writing headers
+
+void mifi_fix_write_header(t_mifi_header *header)
+{
+    t_mifi_header tmpHeader;
+    
+    char *headerChars = (char *)header;
+   
+    unsigned int i;
+    for (i = 0; i < sizeof(header->h_type); i++) {
+	tmpHeader.h_type[i] = header->h_type[i];
+    }
+    tmpHeader.h_length   = header->h_length;
+    tmpHeader.h_format   = header->h_format;
+    tmpHeader.h_ntracks  = header->h_ntracks;
+    tmpHeader.h_division = header->h_division;
+    
+    for (i = 0; i < sizeof(header->h_type); i++) {
+	headerChars[i] = tmpHeader.h_type[i];
+    }
+    headerChars[4]  =  tmpHeader.h_length & 0xFF;
+    headerChars[5]  = (tmpHeader.h_length >> 8)  & 0xFF;
+    headerChars[6]  = (tmpHeader.h_length >> 16) & 0xFF;
+    headerChars[7]  = (tmpHeader.h_length >> 24) & 0xFF;
+    headerChars[8]  =  tmpHeader.h_format & 0xFF;
+    headerChars[9]  = (tmpHeader.h_format >> 8)  & 0xFF;
+    headerChars[10] =  tmpHeader.h_ntracks & 0xFF;
+    headerChars[11] = (tmpHeader.h_ntracks >> 8)  & 0xFF;
+    headerChars[12] =  tmpHeader.h_division & 0xFF;
+    headerChars[13] = (tmpHeader.h_division >> 8)  & 0xFF;
+}
+
+void mifi_fix_track_write_header(t_mifi_header *header)
+{
+    t_mifi_trackheader tmpHeader;
+    
+    char *headerChars = (char *)header;
+    
+    unsigned int i;
+    for (i = 0; i < sizeof(header->h_type); i++) {
+	tmpHeader.h_type[i] = header->h_type[i];
+    }
+    tmpHeader.h_length = header->h_length;
+    
+    for (i = 0; i < sizeof(header->h_type); i++) {
+	headerChars[i] = tmpHeader.h_type[i];
+    }
+    headerChars[4] =  tmpHeader.h_length & 0xFF;
+    headerChars[5] = (tmpHeader.h_length >> 8)  & 0xFF;
+    headerChars[6] = (tmpHeader.h_length >> 16) & 0xFF;
+    headerChars[7] = (tmpHeader.h_length >> 24) & 0xFF;
 }
 
 /* Open midifile for reading, parse the header.  May be used as t_mifi_stream
@@ -341,7 +394,7 @@ t_mifi_stream *mifi_read_start(t_mifi_stream *x,
 //	bifi_free(bp);
 	return (0);
     }
-    mifi_fix_header((char *)&header);
+    mifi_fix_read_header((char *)&header);
     if (strncmp(header.h_type, "MThd", 4))
 	goto badheader;
     header.h_length   = bifi_swap4(header.h_length);
@@ -809,7 +862,8 @@ t_mifi_stream *mifi_write_start(t_mifi_stream *x,
 	header.h_ntracks = bifi_swap2(1);
 	header.h_division = bifi_swap2(192);  /* LATER parametrize this somehow */
     }
-
+    
+    mifi_fix_write_header(&header);
     if (!bifi_write_start(bp, filename, dirname))
     {
 	bifi_error_report(bp);
@@ -861,6 +915,7 @@ int mifi_write_start_track(t_mifi_stream *x)
     x->s_status = x->s_channel = 0;
     x->s_bytesleft = 0;
     x->s_time = 0;
+    mifi_fix_track_write_header(&header);
     if (fwrite(&header, 1,
 	       MIFI_TRACKHEADER_SIZE, x->s_fp) != MIFI_TRACKHEADER_SIZE)
     {

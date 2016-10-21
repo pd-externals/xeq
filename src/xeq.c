@@ -114,7 +114,7 @@ static char wname[MAXPDSTRING];
 static void xeq_window(t_xeq *x, char *title, char *contents)
 {
     int width = 600, height = 340;
-    sprintf(wname, ".%x", (int)x);
+    sprintf(wname, ".%lx", (int)x);
     if (!title) title = "xeq contents";
     sys_vgui("xeq_window %s %dx%d {%s} {%s}\n",
 	     wname, width, height, title, contents);
@@ -122,7 +122,7 @@ static void xeq_window(t_xeq *x, char *title, char *contents)
 
 static void xeq_window_ok(t_xeq *x)
 {
-    sprintf(wname, ".%x", (int)x);
+    sprintf(wname, ".%lx", (int)x);
     sys_vgui("xeq_window_ok %s\n", wname);
 }
 
@@ -130,19 +130,19 @@ static void xeq_window_ok(t_xeq *x)
    before there is any chance of window being closed */
 static void xeq_window_append(t_xeq *x, char *contents)
 {
-    sprintf(wname, ".%x", (int)x);
+    sprintf(wname, ".%lx", (int)x);
     sys_vgui("%s.text insert end {%s}\n", wname, contents);
 }
 
 static void xeq_window_bind(t_xeq *x)
 {
-    sprintf(wname, ".%x.editok", (int)x);
+    sprintf(wname, ".%lx.editok", (int)x);
     pd_bind((t_pd *)x, gensym(wname));
 }
 
 static void xeq_window_unbind(t_xeq *x)
 {
-    sprintf(wname, ".%x.editok", (int)x);
+    sprintf(wname, ".%lx.editok", (int)x);
     pd_unbind((t_pd *)x, gensym(wname));
 }
 
@@ -1063,6 +1063,7 @@ t_xeqlocator *xeq_dolocate(t_xeq *x, t_symbol *s, int ac, t_atom *av)
     t_xeqlocator *loc = 0, *refloc = 0;
     int relative = s == gensym("locafter");
     int skipnotes = s == gensym("skipnotes");
+    post("s: %s, relative: %d, skipnotes: %d", s->s_name, relative, skipnotes);
     if (ac > 0)
     {
 	if (av->a_type == A_SYMBOL) which = av->a_w.w_symbol;
@@ -1330,15 +1331,19 @@ static t_xeq *xeq_derived_embed(t_hyphen *x, int tablesize,
 				t_symbol *seqname, t_symbol *refname,
 				t_method tickmethod)
 {
+    printf("xeq_derived_embed; \n");
     t_xeq *base;
     t_binbuf *bb = 0;
     int i;
     hyphen_attach(x, seqname);
+    printf("xeq_derived_embed; hyphen_attach ok\n");
     if (!hyphen_multiderive(x, xeq_base_class, tablesize))
     {
+        printf("xeq_derived_embed; hyphen_multiderive not ok\n");
 	hyphen_detach(x);
 	return (0);
     }
+    printf("xeq_derived_embed; hyphen_multiderive ok\n");
     if (x->x_host) bb = ((t_xeq *)x->x_host)->x_binbuf;
     for (i = 0, base = XEQ_BASE(x); i < XEQ_NBASES(x); i++, base++)
     {
@@ -1378,6 +1383,7 @@ static t_xeq *xeq_derived_hostify(t_hyphen *x, int tablesize,
     }
     hyphen_forallfriends((t_hyphen *)XEQ_BASE(x),
 			 xeqhook_multicast_setbinbuf, 0);
+    printf("xeq_derived_hostify; ok: %x\n", x);
     return (XEQ_BASE(x));
 }
 
@@ -1386,10 +1392,13 @@ t_hyphen *xeq_derived_new(t_class *derivedclass, int tablesize,
 			  t_symbol *seqname, t_symbol *refname,
 			  t_method tickmethod)
 {
+    printf("xeq_derived_new; tablesize: %d, seqname: %s, refname: %s, tickmethod: ?\n", 
+            tablesize, seqname->s_name, refname->s_name);
     t_hyphen *x = 0;
     int failure = 0;
     if (seqname && seqname != &s_)  /* [xeq_<name> ...] */
     {
+        printf("xeq_derived_new; (seqname && seqname != &s_) true\n");
 	if (!(x = hyphen_new(derivedclass, "xeq"))
 	    || !xeq_derived_embed(x, tablesize, seqname, refname, tickmethod))
 	    failure = 1;
@@ -1403,10 +1412,12 @@ t_hyphen *xeq_derived_new(t_class *derivedclass, int tablesize,
 	   conversion, and may be used to block friend requests (like
 	   `host' message).
 	*/
+        printf("xeq_derived_new; (seqname && seqname != &s_) false\n");
 	if (!(x = hyphen_new(derivedclass, 0))
 	    || !xeq_derived_hostify(x, tablesize, refname, tickmethod))
 	    failure = 1;
     }
+    printf("xeq_derived_new; failure: %d, x: %x\n", failure, x);
     if (failure && x)
     {
 	hyphen_free(x);

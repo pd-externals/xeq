@@ -550,7 +550,7 @@ writefailed:
     if (stp)
     {
 	mifi_write_end(stp);
-	mifi_stream_free(stp);
+//	mifi_stream_free(stp);
     }
     return (result);
 }
