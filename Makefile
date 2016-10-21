@@ -49,3 +49,4 @@ install-aliases: all
 	cp -R examples/a $(installpath)
 	cp -R examples/mf $(installpath)
 	cp -R examples/ql $(installpath)
+	cp examples/*.pd $(installpath)/examples
