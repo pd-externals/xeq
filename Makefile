@@ -30,9 +30,8 @@ datafiles = \
 LICENSE.txt \
 README.md \
 $(wildcard doc/*-help.pd) \
-doc/xeq.pdf 
-#\
-#$(wildcard examples/*.pd)
+doc/output~.pd \
+doc/xeq.pdf
 
 datadirs = \
 examples/ql \

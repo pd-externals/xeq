@@ -1392,8 +1392,9 @@ t_hyphen *xeq_derived_new(t_class *derivedclass, int tablesize,
 			  t_symbol *seqname, t_symbol *refname,
 			  t_method tickmethod)
 {
-    printf("xeq_derived_new; tablesize: %d, seqname: %s, refname: %s, tickmethod: ?\n", 
-            tablesize, seqname->s_name, refname->s_name);
+    printf("xeq_derived_new; init?\n");
+    printf("xeq_derived_new; tablesize: %d, seqname: %s, refname: %s, tickmethod:?\n", 
+            tablesize, (seqname) ? seqname->s_name : "-", (refname) ? refname->s_name : "-");
     t_hyphen *x = 0;
     int failure = 0;
     if (seqname && seqname != &s_)  /* [xeq_<name> ...] */
@@ -1517,7 +1518,9 @@ int xeq_derived_validate(t_hyphen *x)
 
 void xeq_setup(void)
 {
-    post("beware! this is xeq %s, %s %s build... it may bite!",
+    post("beware! this is xeq %s, %s %s build... it will bite!",
+	 XEQ_VERSION, text_ordinal(XEQ_BUILD), XEQ_RELEASE);
+    printf("beware! this is xeq %s, %s %s build... it will bite!\n",
 	 XEQ_VERSION, text_ordinal(XEQ_BUILD), XEQ_RELEASE);
     xeq_gui_defs();
     xeq_locator_setup();

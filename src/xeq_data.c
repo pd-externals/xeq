@@ -115,17 +115,21 @@ static void xeqithook_data_finish(t_xeqit *it)
 
 static void *xeq_data_new(t_symbol *seqname, t_symbol *dsym, t_symbol *tsym)
 {
+    printf("xeq_data_new; init\n");
     t_xeq_data *x =
 	(t_xeq_data *)xeq_derived_new(xeq_data_class, 1, seqname, 0, 0);
+    printf("xeq_data_new; x: %x\n", x);
     int i;
     if (!x) return (0);
 
     /* fill in our `vtbl' */
     xeqit_sethooks(&XEQ_BASE(x)->x_stepit, xeqithook_data_delay, 0,
 		   xeqithook_data_message, xeqithook_data_finish, 0);
+    printf("xeq_data_new; xeqit_sethooks x_stepit\n");
     xeqit_sethooks(&XEQ_BASE(x)->x_walkit, xeqithook_data_offdelay, 0,
 		   xeqithook_data_offmessage, 0, 0);
-
+    printf("xeq_data_new; xeqit_sethooks x_walkit\n");
+ 
     outlet_new((t_object *)x, &s_bang);
 
     if ((x->x_dsym = dsym) != &s_)
@@ -189,6 +193,7 @@ static void xeq_data_bang(t_xeq_data *x)
 
 void xeq_data_dosetup(void)
 {
+    printf("xeq_data_dosetup init\n");
     xeq_data_class = class_new(gensym("xeq_data"), (t_newmethod)xeq_data_new,
 			       (t_method)xeq_data_free, sizeof(t_xeq_data),
 			       0, A_SYMBOL, A_DEFSYM, A_DEFSYM, 0);
@@ -204,9 +209,11 @@ void xeq_data_dosetup(void)
 		    gensym("scale"), A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, 0);
     class_addbang(xeq_data_class, xeq_data_bang);
     xeq_data_selector = gensym("scalar");
+    printf("xeq_data_dosetup ok\n");
 }
 
 void xeq_data_setup(void)
 {
-    xeq_setup();
+     printf("xeq_data_setup init\n");
+   xeq_setup();
 }

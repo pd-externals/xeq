@@ -44,10 +44,10 @@ void hyphen_setup(t_class *hostclass, t_class **baseclass)
 /* called from within both host and friend constructor, instead of pd_new() */
 t_hyphen *hyphen_new(t_class *c, char *hostclassname)
 {
-    printf("hyphen_new \n");
+    printf("hyphen_new: \n");
     t_hyphen *x = (t_hyphen *)pd_new(c);
     hyphen_initialize(x, c, hostclassname);
-    printf("ok %x\n", x);
+    printf("  ok %x\n", x);
     return (x);
 }
 
