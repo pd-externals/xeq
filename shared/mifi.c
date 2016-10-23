@@ -180,7 +180,7 @@ static int mifi_read_start_track(t_mifi_stream *x)
 	{
 	    char buf[5];
 	    strncpy(buf, header.h_type, 4);
-	    buf[5] = '\0';
+	    buf[4] = '\0';
 	    if (x->s_anapass)
 		post("unknown chunk %s in midifile -- skipped", buf);
 	}
@@ -291,7 +291,7 @@ t_mifi_stream *mifi_read_start(t_mifi_stream *x,
     if (!bifi_read_start(bp, filename, dirname))
     {
 	bifi_error_report(bp);
-	bifi_free(bp);
+//	bifi_free(bp);
 	return (0);
     }
     if (strncmp(header.h_type, "MThd", 4))
@@ -332,7 +332,7 @@ badheader:
     post("`%s\' is not a valid midifile", filename);
 badstart:
     if (result && !x) mifi_stream_free(result);
-    bifi_free(bp);
+//    bifi_free(bp);
     return (0);
 }
 
