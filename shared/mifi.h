@@ -49,6 +49,24 @@ typedef struct _mifi_event
     uchar   e_meta;      /* meta-event type */
 } t_mifi_event;
 
+/* header structures for midifile and track */
+
+typedef struct _mifi_header
+{
+    char    h_type[4];
+    uint32  h_length;
+    uint16  h_format;
+    uint16  h_ntracks;
+    uint16  h_division;
+} t_mifi_header;
+
+typedef struct _mifi_trackheader
+{
+    char    h_type[4];
+    uint32  h_length;
+} t_mifi_trackheader;
+
+
 /* This structure holds midi data stream properties, i.e. both the info stored
    in midifile header, and the current state according to position in a stream. */
 /* LATER clean up t_sq and derive t_mifi_stream */
@@ -78,5 +96,10 @@ void mifi_write_end(t_mifi_stream *x);
 int mifi_write_start_track(t_mifi_stream *x);
 int mifi_write_adjust_track(t_mifi_stream *x, uint32 eotdelay);
 int mifi_write_event(t_mifi_stream *x, t_mifi_event *e);
+
+void mifi_fix_file_read_header(t_mifi_header *header);
+void mifi_fix_track_read_header(t_mifi_header *header);
+void mifi_fix_file_write_header(t_mifi_header *header);
+void mifi_fix_track_write_header(t_mifi_header *header);
 
 #endif
