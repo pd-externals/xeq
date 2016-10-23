@@ -69,6 +69,9 @@ static t_class *xeq_base_class;
 
 static void xeq_gui_defs(void)
 {
+    int major, minor, bugfix;
+    sys_getversion(&major, &minor, &bugfix);
+
     /* Generic window definition.  Ideally, some variant of
        what is defined below should find its way into pd.tk */
     sys_gui("proc xeq_window {name geometry title contents} {\n");
@@ -94,7 +97,10 @@ static void xeq_gui_defs(void)
     sys_gui("proc xeq_window_ok {name} {\n");
     sys_gui(" if {[winfo exists $name]} {\n");
     sys_gui("  set ii [$name.text index [concat end - 1 lines]]\n");
-    sys_gui("  pd [concat $name.editok clear \\;]\n");
+    if (major > 0 || minor > 42)
+        sys_gui("  pdsend [concat $name.editok clear \\;]\n");
+    else
+        sys_gui("  pd [concat $name.editok clear \\;]\n");
     sys_gui("  for {set i 1} \\\n");
     sys_gui("   {[$name.text compare $i.end < $ii]} \\\n");
     sys_gui("  	{incr i 1} {\n");
@@ -102,7 +108,10 @@ static void xeq_gui_defs(void)
     sys_gui("   if {$lin != \"\"} {\n");
     sys_gui("    regsub -all \\; $lin \"  _semi_ \" tmplin\n");
     sys_gui("    regsub -all \\, $tmplin \"  _comma_ \" lin\n");
-    sys_gui("    pd [concat $name.editok addline $lin \\;]\n");
+    if (major > 0 || minor > 42)
+        sys_gui("    pdsend [concat $name.editok addline $lin \\;]\n");
+    else
+        sys_gui("    pd [concat $name.editok addline $lin \\;]\n");
     sys_gui("   }\n");
     sys_gui("  }\n");
     sys_gui(" }\n");
