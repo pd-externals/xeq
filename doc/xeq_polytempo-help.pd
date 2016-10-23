@@ -1,0 +1,25 @@
+#N canvas 79 547 450 300 10;
+#X declare -lib xeq/xeq;
+#X obj 51 238 xeq_polytempo \$0-var;
+#X obj 300 278 declare -lib xeq/xeq;
+#X msg 70 99 host \$1-var;
+#X obj 70 81 \$0;
+#X obj 70 65 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X floatatom 96 168 5 0 0 0 - - -, f 5;
+#X obj 301 238 xeq \$0-var;
+#X text 29 11 xeq_polytempo;
+#X msg 301 214 mfread mf/kanon.mid;
+#X msg 81 122 layers 2 3;
+#X text 164 122 args: firstLayer lastLayer;
+#X text 141 167 sets the tempo;
+#X text 229 147 args: floats;
+#X msg 89 145 rubato 1 2 3 4 5;
+#X text 30 30 sets the tempo for multiple layers/tracks?;
+#X connect 2 0 0 0;
+#X connect 3 0 2 0;
+#X connect 4 0 3 0;
+#X connect 5 0 0 0;
+#X connect 8 0 6 0;
+#X connect 9 0 0 0;
+#X connect 13 0 0 0;

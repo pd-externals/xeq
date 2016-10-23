@@ -1,0 +1,10 @@
+#N canvas 443 538 450 300 10;
+#X declare -lib xeq/xeq;
+#X obj 300 278 declare -lib xeq/xeq;
+#X text 30 16 xeq_host;
+#X text 33 39 A wrapper for `hostified' friends;
+#X obj 299 167 xeq_parse \$0-var;
+#X obj 299 127 xeq \$0-var;
+#X msg 305 84 add aap;
+#X obj 90 165 xeq-host \$0-var ap;
+#X connect 5 0 4 0;
