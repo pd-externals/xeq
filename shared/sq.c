@@ -325,13 +325,13 @@ int squtt_checksymbol(t_squtt *x, t_symbol *s)
 	return (-1);
     else if (x->t_start)
     {
-	char *p = s->s_name;
-	int track = 0;
-	while (*p >= '0' && *p <= '9')
-	    track = track * 10 + *p++ - '0';
-	if (track >= x->t_start &&
-	    track >= x->t_first && track <= x->t_last &&
-	    (x->t_default || (*p && !strcmp(p, x->t_base->s_name))))
+//	char *p = s->s_name;
+	int track = 1;
+//	while (*p >= '0' && *p <= '9')
+//	    track = track * 10 + *p++ - '0';
+//	if (track >= x->t_start &&
+//	    track >= x->t_first && track <= x->t_last &&
+//	    (x->t_default || (*p && !strcmp(p, x->t_base->s_name))))
 	    return (track);
     }
     else if (s == x->t_base)

@@ -155,9 +155,9 @@ static int mfbb_parse_channel(t_atom *ap, t_mifi_event *evp)
     if (ap->a_type == A_FLOAT && (f = ap->a_w.w_float) >= 0 && f <= 16)
     {
 	if ((evp->e_channel = (uchar)f) > 0) evp->e_channel--;
-	return (1);
+	return ((int)f);
     }
-    return (0);
+    return (-1);
 
 }
 
@@ -192,7 +192,7 @@ static int mfbb_parse(t_binbuf *x, t_mifi_stream *stp, t_squtt *tt,
 #else  /* but keep unfolded version ready */
 	thisticks = (uint32)(delaytime * stp->s_timecoef);
 #endif
-	if (!(track = squtt_checkatom(tt, ap1)))
+	if (!(squtt_checkatom(tt, ap1)))
 	    goto nextmessage;
 	tname = ap1->a_w.w_symbol;
 	ap1++;
@@ -202,14 +202,16 @@ static int mfbb_parse(t_binbuf *x, t_mifi_stream *stp, t_squtt *tt,
 	else goto nextmessage;
 	if (MIFI_ONE_DATABYTE(evp->e_status))
 	{
-	    if (mfbb_parse_channel(ap1, evp)) ap1++;
+            track = mfbb_parse_channel(ap1, evp);
+	    if (track != -1) ap1++;
 	    else goto nextmessage;
 	    evp->e_data[1] = 0, ap1++;  /* accept this being just anything... */
 	}
 	else {
 	    if (mfbb_parse_data(ap1, evp, 1)) ap1++;
 	    else goto nextmessage;
-	    if (mfbb_parse_channel(ap1, evp)) ap1++;
+            track = mfbb_parse_channel(ap1, evp);
+	    if (track != -1) ap1++;
 	    else goto nextmessage;
 	}
 	if (ap1->a_type != A_SEMI)  /* ...but this is required */
