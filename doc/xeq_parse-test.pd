@@ -1,4 +1,4 @@
-#N canvas 248 250 450 442 10;
+#N canvas 521 233 450 442 10;
 #X obj 251 345 xeq \$0-var;
 #X msg 45 32 tracks;
 #X msg 205 58 flush;
@@ -21,16 +21,16 @@
 #X msg 109 288 editok;
 #X msg 247 147 locafter 41 21;
 #X msg 246 120 find Track-2;
+#X msg 274 218 mfread kanon_rg.mid;
 #X obj 251 421 print xeq1;
 #X msg 216 267 mfwrite /tmp/kanon2.mid 1:4;
 #X obj 284 401 print xeq2;
 #X obj 318 381 print xeq3;
-#X msg 288 290 mfread kanon2.mid;
-#X msg 284 242 mfread /tmp/kanon.mid;
-#X msg 274 218 mfread /tmp/kanon_rg2.mid;
-#X connect 0 0 21 0;
-#X connect 0 1 23 0;
-#X connect 0 2 24 0;
+#X msg 288 290 mfread /tmp/kanon2.mid;
+#X msg 285 242 mfread /tmp/kanon.mid;
+#X connect 0 0 22 0;
+#X connect 0 1 24 0;
+#X connect 0 2 25 0;
 #X connect 1 0 4 0;
 #X connect 2 0 4 0;
 #X connect 4 0 3 0;
@@ -49,7 +49,7 @@
 #X connect 18 0 0 0;
 #X connect 19 0 4 0;
 #X connect 20 0 4 0;
-#X connect 22 0 0 0;
-#X connect 25 0 0 0;
+#X connect 21 0 0 0;
+#X connect 23 0 0 0;
 #X connect 26 0 0 0;
 #X connect 27 0 0 0;
