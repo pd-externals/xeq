@@ -1,0 +1,21 @@
+
+
+The shared framework is based on the object list from Pd, but applied on event lists. This technique is similar to the modern [array] and [text] objects.
+
+shared framework map:
+
+hyphen manages connections between entities and keeps two lists of collections, one for hosts and one for friends. Both are stored as hashes, so can be efficiently retrieved.
+
+dict is the layer that does the actual storing and retrieving of the event lists.
+
+mfbb is the midifile binbuf interface.
+
+mifi handles the high level part of reading and writing midi files.
+
+bifi is the low level part of reading and writing files.
+
+sq are the sequencer utilities.
+
+text are the text utilities.
+
+vefl is the interface to garrays. It is present, but not used in the xeq framework.
