@@ -1,4 +1,4 @@
-#N canvas 382 529 450 508 10;
+#N canvas 43 571 450 508 10;
 #X declare -lib xeq/xeq;
 #X obj 72 192 xeq_parse \$0-var;
 #X obj 298 509 declare -lib xeq/xeq;
@@ -244,16 +244,12 @@
 #X obj 199 372 *~ 0.2;
 #X text 45 47 This is a `midiparse' of xeq group;
 #X text 45 26 xeq_parse;
-#N canvas 1 274 519 773 parse 1;
+#N canvas 1 100 519 947 parse 0;
 #X msg 21 17 host aHost;
 #X msg 190 41 loop gimme;
 #X msg 194 66 rewind;
 #X msg 198 89 stop;
 #X msg 199 112 flush;
-#X msg 292 55 locate gimme;
-#X msg 302 77 locafter gimme;
-#X msg 311 100 skipnotes gimme;
-#X msg 319 122 find gimme;
 #X msg 327 145 event gimme;
 #X obj 57 268 xeq_parse \$0-all;
 #X obj 11 326 print data;
@@ -282,51 +278,71 @@ argument is not 0 \, only the move is made.;
 #X msg 44 55 tracks;
 #X msg 56 78 transpo;
 #X msg 65 102 tempo;
-#X text 2 578 flush;
-#X text 83 578 - sends key-off for all 128 keys on all 16 channels
+#X text 2 607 flush;
+#X text 83 607 - sends key-off for all 128 keys on all 16 channels
 ;
-#X text 2 530 stop;
-#X text 83 530 - stops the current playback;
+#X text 2 559 stop;
+#X text 83 559 - stops the current playback;
 #X text 2 512 loop s|f;
-#X text 83 512 - takes a float or "break" as optional argument;
-#X text 2 551 rewind;
-#X text 83 551 - stops playback and resets the pointer to the start
+#X text 2 580 rewind;
+#X text 83 580 - stops playback and resets the pointer to the start
 of the track;
-#X text 2 597 locate ..;
-#X text 2 629 locafter ..;
-#X text 2 657 skipnotes;
-#X text 2 687 find;
-#X text 2 708 event;
-#X text 84 687 -;
-#X text 83 597 - accepts up to two arguments: symbol-float \, symbol-symbol
+#X text 2 626 locate ..;
+#X text 2 658 locafter ..;
+#X text 2 686 skipnotes;
+#X text 2 744 event;
+#X text 83 626 - accepts up to two arguments: symbol-float \, symbol-symbol
 \, or just a float;
-#X text 84 657 - accepts up to two arguments: symbol-float \, symbol-symbol
+#X text 84 686 - accepts up to two arguments: symbol-float \, symbol-symbol
 \, or just a float (=locate in skipnotes mode);
-#X text 84 629 - accepts up to two arguments: symbol-float \, symbol-symbol
+#X text 84 658 - accepts up to two arguments: symbol-float \, symbol-symbol
 \, or just a float (= locate in relative mode);
-#X text 84 708 - (=find in event mode);
-#X connect 0 0 10 0;
-#X connect 1 0 10 0;
-#X connect 2 0 10 0;
-#X connect 3 0 10 0;
-#X connect 4 0 10 0;
-#X connect 5 0 10 0;
-#X connect 6 0 10 0;
-#X connect 7 0 10 0;
-#X connect 8 0 10 0;
-#X connect 9 0 10 0;
-#X connect 10 0 11 0;
-#X connect 10 1 12 0;
-#X connect 10 2 13 0;
-#X connect 10 3 14 0;
-#X connect 10 4 15 0;
-#X connect 10 5 16 0;
-#X connect 10 6 17 0;
-#X connect 10 7 18 0;
-#X connect 30 0 10 0;
-#X connect 31 0 10 0;
-#X connect 32 0 10 0;
-#X connect 33 0 10 0;
+#X text 84 744 - (=find in event mode);
+#X text 2 716 find ...;
+#X text 84 716 - looks for the provided pattern of symbols/floats.
+reports the location in atom count and millis-seconds at the console
+;
+#X text 8 822 <timestamp> <track name> <command> <note number> <velocity>
+<channel> \;, f 71;
+#X text 6 805 midi file internal presentation:;
+#X text 7 840 timestamp = in milliseconds;
+#X text 8 856 track name = free text track description;
+#X text 8 870 command = the midi message first byte with channel part
+masked off, f 68;
+#X text 9 885 note number = the midi message second byte;
+#X text 10 901 velocity = the midi message third byte;
+#X text 9 917 channel = the midi message first byte with command masked
+off, f 64;
+#X msg 292 55 locate Track-1 128;
+#X msg 302 77 locafter Track-2 144;
+#X msg 311 100 skipnotes Track-3 144;
+#X msg 319 122 find 144 42 88 4;
+#X text 98 527 no args: restarts previous loop;
+#X text 98 541 break: stops the loop;
+#X text 84 515 - two floats: begin and end point of the loop range
+;
+#X connect 0 0 6 0;
+#X connect 1 0 6 0;
+#X connect 2 0 6 0;
+#X connect 3 0 6 0;
+#X connect 4 0 6 0;
+#X connect 5 0 6 0;
+#X connect 6 0 7 0;
+#X connect 6 1 8 0;
+#X connect 6 2 9 0;
+#X connect 6 3 10 0;
+#X connect 6 4 11 0;
+#X connect 6 5 12 0;
+#X connect 6 6 13 0;
+#X connect 6 7 14 0;
+#X connect 26 0 6 0;
+#X connect 27 0 6 0;
+#X connect 28 0 6 0;
+#X connect 29 0 6 0;
+#X connect 55 0 6 0;
+#X connect 56 0 6 0;
+#X connect 57 0 6 0;
+#X connect 58 0 6 0;
 #X restore 290 391 pd parse allMessages;
 #N canvas 873 185 478 361 s_sine_oct 0;
 #X obj 29 5 inlet;

@@ -1,4 +1,4 @@
-#N canvas 79 547 450 300 10;
+#N canvas 75 547 523 531 10;
 #X declare -lib xeq/xeq;
 #X obj 51 238 xeq_polytempo \$0-var;
 #X obj 300 278 declare -lib xeq/xeq;
@@ -16,6 +16,15 @@
 #X text 229 147 args: floats;
 #X msg 89 145 rubato 1 2 3 4 5;
 #X text 30 30 sets the tempo for multiple layers/tracks?;
+#X text 10 426 rubato;
+#X text 10 363 host;
+#X text 73 364 - sets the host;
+#X text 10 383 layers;
+#X text 74 383 -;
+#X text 75 427 - takes at least two floats. All floats are stored in
+the the reftable. If the number of floats is odd \, the pairs are also
+interpreted as realtime-usertime pairs \, totalling both;
+#X msg 131 193 status;
 #X connect 2 0 0 0;
 #X connect 3 0 2 0;
 #X connect 4 0 3 0;
@@ -23,3 +32,4 @@
 #X connect 8 0 6 0;
 #X connect 9 0 0 0;
 #X connect 13 0 0 0;
+#X connect 21 0 0 0;

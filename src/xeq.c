@@ -1509,11 +1509,29 @@ int xeq_derived_validate(t_hyphen *x)
     return (1);
 }
 
+static void xeq_status(t_xeq *x)
+{
+    post("  --==## xeq status ##==--");
+    post("x_this.x_hostname: %s", (x->x_this.x_hostname) ? x->x_this.x_hostname->s_name : "??");
+    post("is a host: %s", (x == x->x_this.x_host) ? "yes" : "no");
+    post("x_ttp:  %x", x->x_ttp);
+    if (x->x_ttp) {
+        post("x_ttp->t_base:    %s", (x->x_ttp->t_base)    ? x->x_ttp->t_base->s_name    : "??");
+        post("x_ttp->t_default: %s", (x->x_ttp->t_default) ? x->x_ttp->t_default->s_name : "??");
+        post("x_ttp->t_given:   %s", (x->x_ttp->t_given)   ? x->x_ttp->t_given->s_name   : "??");
+        post("x_ttp->t_first:   %d", x->x_ttp->t_first);
+        post("x_ttp->t_last:    %d", x->x_ttp->t_last);
+        post("x_ttp->t_start:   %d", x->x_ttp->t_start);
+    }
+    post("x_transpo: %d", x->x_transpo);
+    post("x_tempo: %f", x->x_tempo);
+
+}
 /* ENTRY POINT */
 
 void xeq_setup(void)
 {
-    post("beware! this is xeq %s, %s %s build... it may bite!",
+    post("beware! this is xeq %s, %s %s build... it will bite!",
 	 XEQ_VERSION, text_ordinal(XEQ_BUILD), XEQ_RELEASE);
     xeq_gui_defs();
     xeq_locator_setup();
@@ -1577,6 +1595,7 @@ void xeq_setup(void)
 		    gensym("mfwrite"), A_SYMBOL, A_DEFSYM, 0);
 
     class_addmethod(xeq_class, (t_method)xeq_print, gensym("print"), 0);
+    class_addmethod(xeq_class, (t_method)xeq_status, gensym("status"), 0);
 
     hyphen_setup(xeq_class, &xeq_base_class);
     xeq_host_dosetup();  /* this must precede the others */

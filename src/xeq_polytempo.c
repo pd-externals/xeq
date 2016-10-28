@@ -130,16 +130,20 @@ static void xeq_polytempo_layers(t_xeq_polytempo *x,
 {
     int i1 = (int)f1, i2 = (int)f2;
     int maxlayers;
-    t_xeq *base = XEQ_HOST(x);
+printf("xeq_polytempo_layers; x_host: %x\n", XEQ_HOST(x));
+    t_xeq *base = XEQ_BASE(x);
     if (!base)
 	return;
+printf("xeq_polytempo_layers; x_self: %x\n", XEQ_NBASES(((t_hyphen *)base)->x_self));
     maxlayers = XEQ_NBASES(((t_hyphen *)base)->x_self);
+printf("xeq_polytempo_layers maxlayers: %d \n", maxlayers);
     if (!x->x_env)
     {
 	if (!(x->x_env = getbytes(maxlayers * sizeof(*x->x_env))))
 	    return;
 	x->x_maxlayers = maxlayers;
 	xeq_polytempo_newclocks(x);
+printf("xeq_polytempo_layers; set x_env %x\n", x->x_env);
     }
     else if (maxlayers > x->x_maxlayers)
     {
@@ -150,6 +154,7 @@ static void xeq_polytempo_layers(t_xeq_polytempo *x,
 	    return;
 	x->x_maxlayers = maxlayers;
 	xeq_polytempo_newclocks(x);
+printf("xeq_polytempo_layers; resizebytes: %x\n", x->x_env);
     }
     if (i1 > maxlayers)
 	return;
@@ -201,6 +206,7 @@ static void xeq_polytempo_rubato(t_xeq_polytempo *x,
 	if (av[i].a_type != A_FLOAT)
 	{
 	    ac = i;
+            post("xeq_polytempo_rubato; non-flaoat argument at %d", i);
 	    break;
 	}
 	reftable[i] = av[i].a_w.w_float;
@@ -260,6 +266,43 @@ static void xeq_polytempo_rubato(t_xeq_polytempo *x,
 	ep->e_whenclockset = clock_getsystime();
     }
 }
+//    t_hyphen  x_this;
+//    int       x_firstlayer;  /* +1 on i/o */
+//    int       x_lastlayer;
+//    int       x_maxlayers;   /* x_env nelements */
+//    t_xeq_polytempo_envelope  *x_env;
+
+//    t_xeq    *e_base;
+//    t_clock  *e_clock;
+//    double    e_whenclockset;
+//    float     e_clockdelay;
+//    float     e_table[XEQ_POLYTEMPO_ENVELOPE_MAX];
+//    int       e_count;
+//    int       e_current;
+//    float     e_targettempo;
+
+static void xeq_polytempo_status(t_xeq_polytempo *x)
+{
+    post("  --==## xeq_polytempo ##==--");
+    post("x_this.x_hostname: %s", (x->x_this.x_hostname) ? x->x_this.x_hostname->s_name : "??");
+    post("is a host: %s", ((int*)x == (int*)x->x_this.x_host) ? "yes" : "no");
+    post("firstlayer: %d", x->x_firstlayer);
+    post("lastlayer: %d",  x->x_lastlayer);
+    post("maxlayer: %d",   x->x_maxlayers);
+    if (x->x_env) {
+        post("envelope e_whenclockset: %df", x->x_env->e_whenclockset);
+        post("envelope e_clockdelay: %f", x->x_env->e_clockdelay);
+        post("envelope e_count: %d", x->x_env->e_count);
+        post("envelope e_current: %d", x->x_env->e_current);
+        post("envelope e_targettempo: %f", x->x_env->e_targettempo);
+        post("envelope e_table:");
+        int i;
+        for (i = 0; i < x->x_env->e_count; i++)
+        {
+            post(" %i: %f", i, x->x_env->e_table[i]);
+        }
+    }
+}
 
 void xeq_polytempo_dosetup(void)
 {
@@ -279,6 +322,9 @@ void xeq_polytempo_dosetup(void)
     class_addfloat(xeq_polytempo_class, xeq_polytempo_float);
     class_addmethod(xeq_polytempo_class, (t_method)xeq_polytempo_rubato,
 		    gensym("rubato"), A_GIMME, 0);
+    
+    class_addmethod(xeq_polytempo_class, (t_method)xeq_polytempo_status,
+		    gensym("status"), 0);
 }
 
 void xeq_polytempo_setup(void)
