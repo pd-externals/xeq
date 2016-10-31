@@ -69,6 +69,13 @@ static t_class *xeq_base_class;
 
 static void xeq_gui_defs(void)
 {
+    int major, minor, bugfix;
+    sys_getversion(&major, &minor, &bugfix);
+//    if (major > 0 || minor > 42)
+//        return 1;
+//    else
+//        return 0;
+
     /* Generic window definition.  Ideally, some variant of
        what is defined below should find its way into pd.tk */
     sys_gui("proc xeq_window {name geometry title contents} {\n");
@@ -94,7 +101,10 @@ static void xeq_gui_defs(void)
     sys_gui("proc xeq_window_ok {name} {\n");
     sys_gui(" if {[winfo exists $name]} {\n");
     sys_gui("  set ii [$name.text index [concat end - 1 lines]]\n");
-    sys_gui("  pd [concat $name.editok clear \\;]\n");
+    if (major > 0 || minor > 42)
+        sys_gui("  pdsend [concat $name.editok clear \\;] \n");
+    else
+        sys_gui("  pd [concat $name.editok clear \\;]\n");
     sys_gui("  for {set i 1} \\\n");
     sys_gui("   {[$name.text compare $i.end < $ii]} \\\n");
     sys_gui("  	{incr i 1} {\n");
@@ -102,7 +112,10 @@ static void xeq_gui_defs(void)
     sys_gui("   if {$lin != \"\"} {\n");
     sys_gui("    regsub -all \\; $lin \"  _semi_ \" tmplin\n");
     sys_gui("    regsub -all \\, $tmplin \"  _comma_ \" lin\n");
-    sys_gui("    pd [concat $name.editok addline $lin \\;]\n");
+    if (major > 0 || minor > 42)
+        sys_gui("    pdsend [concat $name.editok addline $lin \\;]\n");
+    else
+        sys_gui("    pd [concat $name.editok addline $lin \\;]\n");
     sys_gui("   }\n");
     sys_gui("  }\n");
     sys_gui(" }\n");
@@ -114,7 +127,7 @@ static char wname[MAXPDSTRING];
 static void xeq_window(t_xeq *x, char *title, char *contents)
 {
     int width = 600, height = 340;
-    sprintf(wname, ".%x", (int)x);
+    sprintf(wname, ".%lx", (int)x);
     if (!title) title = "xeq contents";
     sys_vgui("xeq_window %s %dx%d {%s} {%s}\n",
 	     wname, width, height, title, contents);
@@ -122,7 +135,7 @@ static void xeq_window(t_xeq *x, char *title, char *contents)
 
 static void xeq_window_ok(t_xeq *x)
 {
-    sprintf(wname, ".%x", (int)x);
+    sprintf(wname, ".%lx", (int)x);
     sys_vgui("xeq_window_ok %s\n", wname);
 }
 
@@ -130,19 +143,19 @@ static void xeq_window_ok(t_xeq *x)
    before there is any chance of window being closed */
 static void xeq_window_append(t_xeq *x, char *contents)
 {
-    sprintf(wname, ".%x", (int)x);
+    sprintf(wname, ".%lx", (int)x);
     sys_vgui("%s.text insert end {%s}\n", wname, contents);
 }
 
 static void xeq_window_bind(t_xeq *x)
 {
-    sprintf(wname, ".%x.editok", (int)x);
+    sprintf(wname, ".%lx.editok", (int)x);
     pd_bind((t_pd *)x, gensym(wname));
 }
 
 static void xeq_window_unbind(t_xeq *x)
 {
-    sprintf(wname, ".%x.editok", (int)x);
+    sprintf(wname, ".%lx.editok", (int)x);
     pd_unbind((t_pd *)x, gensym(wname));
 }
 
@@ -1063,6 +1076,7 @@ t_xeqlocator *xeq_dolocate(t_xeq *x, t_symbol *s, int ac, t_atom *av)
     t_xeqlocator *loc = 0, *refloc = 0;
     int relative = s == gensym("locafter");
     int skipnotes = s == gensym("skipnotes");
+    post("s: %s, relative: %d, skipnotes: %d", s->s_name, relative, skipnotes);
     if (ac > 0)
     {
 	if (av->a_type == A_SYMBOL) which = av->a_w.w_symbol;
@@ -1217,8 +1231,10 @@ static void xeq_mfread(t_xeq *x, t_symbol *s, int ac, t_atom *av)
     filename = av->a_w.w_symbol;
     if (ac > 1 && !(tts = squtt_makesymbol(av + 1))) return;
     if (mfbb_read(x->x_binbuf, filename->s_name,
-		  canvas_getdir(x->x_canvas)->s_name, tts))
+		  canvas_getdir(x->x_canvas)->s_name, tts)) {
 	error("%s: read failed", filename->s_name);
+	return;
+    }
     xeq_rewind(x);
     hyphen_forallfriends((t_hyphen *)x, xeqhook_multicast_rewind, 0);
 }
@@ -1328,15 +1344,19 @@ static t_xeq *xeq_derived_embed(t_hyphen *x, int tablesize,
 				t_symbol *seqname, t_symbol *refname,
 				t_method tickmethod)
 {
+    printf("xeq_derived_embed; \n");
     t_xeq *base;
     t_binbuf *bb = 0;
     int i;
     hyphen_attach(x, seqname);
+    printf("xeq_derived_embed; hyphen_attach ok\n");
     if (!hyphen_multiderive(x, xeq_base_class, tablesize))
     {
+        printf("xeq_derived_embed; hyphen_multiderive not ok\n");
 	hyphen_detach(x);
 	return (0);
     }
+    printf("xeq_derived_embed; hyphen_multiderive ok\n");
     if (x->x_host) bb = ((t_xeq *)x->x_host)->x_binbuf;
     for (i = 0, base = XEQ_BASE(x); i < XEQ_NBASES(x); i++, base++)
     {
@@ -1376,6 +1396,7 @@ static t_xeq *xeq_derived_hostify(t_hyphen *x, int tablesize,
     }
     hyphen_forallfriends((t_hyphen *)XEQ_BASE(x),
 			 xeqhook_multicast_setbinbuf, 0);
+    printf("xeq_derived_hostify; ok: %x\n", x);
     return (XEQ_BASE(x));
 }
 
@@ -1384,10 +1405,14 @@ t_hyphen *xeq_derived_new(t_class *derivedclass, int tablesize,
 			  t_symbol *seqname, t_symbol *refname,
 			  t_method tickmethod)
 {
+    printf("xeq_derived_new; init?\n");
+    printf("xeq_derived_new; tablesize: %d, seqname: %s, refname: %s, tickmethod:?\n", 
+            tablesize, (seqname) ? seqname->s_name : "-", (refname) ? refname->s_name : "-");
     t_hyphen *x = 0;
     int failure = 0;
     if (seqname && seqname != &s_)  /* [xeq_<name> ...] */
     {
+        printf("xeq_derived_new; (seqname && seqname != &s_) true\n");
 	if (!(x = hyphen_new(derivedclass, "xeq"))
 	    || !xeq_derived_embed(x, tablesize, seqname, refname, tickmethod))
 	    failure = 1;
@@ -1401,10 +1426,12 @@ t_hyphen *xeq_derived_new(t_class *derivedclass, int tablesize,
 	   conversion, and may be used to block friend requests (like
 	   `host' message).
 	*/
+        printf("xeq_derived_new; (seqname && seqname != &s_) false\n");
 	if (!(x = hyphen_new(derivedclass, 0))
 	    || !xeq_derived_hostify(x, tablesize, refname, tickmethod))
 	    failure = 1;
     }
+    printf("xeq_derived_new; failure: %d, x: %x\n", failure, x);
     if (failure && x)
     {
 	hyphen_free(x);
@@ -1504,7 +1531,9 @@ int xeq_derived_validate(t_hyphen *x)
 
 void xeq_setup(void)
 {
-    post("beware! this is xeq %s, %s %s build... it may bite!",
+    post("beware! this is xeq %s, %s %s build... it will bite!",
+	 XEQ_VERSION, text_ordinal(XEQ_BUILD), XEQ_RELEASE);
+    printf("beware! this is xeq %s, %s %s build... it will bite!\n",
 	 XEQ_VERSION, text_ordinal(XEQ_BUILD), XEQ_RELEASE);
     xeq_gui_defs();
     xeq_locator_setup();

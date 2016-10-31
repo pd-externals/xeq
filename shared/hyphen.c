@@ -44,8 +44,10 @@ void hyphen_setup(t_class *hostclass, t_class **baseclass)
 /* called from within both host and friend constructor, instead of pd_new() */
 t_hyphen *hyphen_new(t_class *c, char *hostclassname)
 {
+    printf("hyphen_new: \n");
     t_hyphen *x = (t_hyphen *)pd_new(c);
     hyphen_initialize(x, c, hostclassname);
+    printf("  ok %x\n", x);
     return (x);
 }
 
@@ -187,6 +189,7 @@ static void hyphen_basetable_init(t_hyphen *x)
 	     i < x->x_tablesize; i++,
 	     base += x->x_baseclass->c_size)
 	{
+            printf("hyphen_basetable_init; i: %d, base: %x\n", i, base);
 	    *(t_pd *)&base->x_ob = x->x_baseclass;
 	    base->x_id = i;
 	    base->x_self = x;
@@ -197,6 +200,7 @@ static void hyphen_basetable_init(t_hyphen *x)
 	}
     }
     else bug("hyphen_basetable_init");
+    printf("hyphen_basetable_init; ok\n");
 }
 
 /* Called from within friend hyphen constructor to allocate embedded
@@ -210,10 +214,14 @@ t_hyphen *hyphen_derive(t_hyphen *x, t_class *baseclass)
 /* multibase version of the above */
 t_hyphen *hyphen_multiderive(t_hyphen *x, t_class *baseclass, int tablesize)
 {
+    printf("hyphen_multiderive; baseclass: %s, tablesize %d\n", baseclass->c_name->s_name, tablesize);
     if (tablesize < 0) return (0);
     if (tablesize < 1) tablesize = 1;
-    if (!(x->x_basetable = (t_hyphen *)getbytes(tablesize * baseclass->c_size)))
+    if (!(x->x_basetable = (t_hyphen *)getbytes(tablesize * baseclass->c_size))) {
+        printf("hyphen_multiderive; getbytes failed\n");
 	return (0);
+    }
+    printf("hyphen_multiderive; getbytes ok\n");
     x->x_baseclass = baseclass;
     x->x_tablesize = tablesize;
     hyphen_basetable_init(x);

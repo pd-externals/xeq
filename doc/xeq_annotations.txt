@@ -1,0 +1,21 @@
+Annotations to xeq.pdf
+
+Dealing with time in music:
+- using a regular (or irregular) metrical grid
+- measure events with a clock and 'warp' the clock
+
+Dealing with structure:
+- a static network of onterconnected Pd-objects
+- dynamically unfold in successive sequence-rendering messages (which might be sequenced themselves)
+- controlling multiple sequence playback objects with another sequence
+
+Simple playback (qlist type):
+[read <file>(
+ |
+[xeq <name>]      [xeq_??? <name>]
+
+Simple playback (pidi type):
+
+[mfread <file>(
+ |
+[xeq <name>]      [xeq_parse <name>]

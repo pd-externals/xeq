@@ -57,6 +57,10 @@ static void *xeq_host_new(t_symbol *s, int ac, t_atom *av)
 	{
 	    x = (*m)(s, ac, av);
 	}
+        if (!x) 
+        {
+            post("xeq_host: '%s' is not a valid dictionary key", s1->s_name);    
+        }
     }
     return (x);
 }
@@ -73,4 +77,5 @@ void xeq_host_dosetup(void)
 void xeq_host_setup(void)
 {
     xeq_setup();
+    post("xeq_host: setup");
 }

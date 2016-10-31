@@ -50,11 +50,6 @@ static void vefl_tick(t_vefl *vp)
 t_vefl *vefl_placement_new(t_vefl *vp, t_symbol *name,
 			   int writable, t_glist *gl, t_garray *arr)
 {
-    if (sizeof(t_word) != sizeof(t_float))
-    {
-	bug("vefl_new: sizeof(t_word) != sizeof(t_float)");
-	return (0);
-    }
     if (!vp)
     {
 	if (!(vp = getbytes(sizeof(*vp))))
@@ -81,7 +76,7 @@ t_vefl *vefl_placement_new(t_vefl *vp, t_symbol *name,
 	vp->v_glist = vp->v_garray ? vp->v_garray->x_glist : 0;
     }
     if (vp->v_garray
-	&& !garray_getfloatarray(vp->v_garray, &vp->v_size, &vp->v_data))
+	&& !garray_getfloatwords(vp->v_garray, &vp->v_size, &vp->v_data))
     {
 	vp->v_glist = 0;
 	vp->v_garray = 0;
@@ -118,7 +113,7 @@ int vefl_renew(t_vefl *vp, t_symbol *name, int complain)
 	{
 	    if (complain) error("%s: no such array", name->s_name);
 	}
-	else if (!garray_getfloatarray(vp->v_garray, &vp->v_size, &vp->v_data))
+	else if (!garray_getfloatwords(vp->v_garray, &vp->v_size, &vp->v_data))
 	{
 	    vp->v_garray = 0;
 	    if (complain) error("%s: bad template", name->s_name);

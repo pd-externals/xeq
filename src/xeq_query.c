@@ -85,6 +85,20 @@ static void xeq_query_natoms(t_xeq_query *x, t_symbol *s, int ac, t_atom *av)
     }
 }
 
+static void xeq_query_status(t_xeq_query *x)
+{
+    post("  --==## xeq_query status ##==--");
+    post("x_this.x_hostname:  %s", x->x_this.x_hostname->s_name);
+    post("x_this.x_friendname: %s", x->x_this.x_friendname->s_name);
+//    post("x_this.x_host.x_hostname: %s", x->x_this.x_host->x_hostname->s_name);
+//    post("x_this.x_host.x_ttp.first: %d", XEQ_HOST(x->x_this.x_host)->x_ttp->t_first);
+    int i;
+    for (i = 0; i < XEQ_QUERY_NATOMS_MAX; i++)
+    {
+        post("nantom %d: %d", i, x->x_buffer[i].a_type);
+    }
+}
+
 void xeq_query_dosetup(void)
 {
     xeq_query_class = class_new(gensym("xeq_query"),
@@ -104,6 +118,8 @@ void xeq_query_dosetup(void)
 		    gensym("tempo"), A_GIMME, 0);
     class_addmethod(xeq_query_class, (t_method)xeq_query_natoms,
 		    gensym("natoms"), A_GIMME, 0);
+    class_addmethod(xeq_query_class, (t_method)xeq_query_status,
+		    gensym("status"), 0);
 }
 
 void xeq_query_setup(void)

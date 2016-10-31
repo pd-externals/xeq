@@ -1,0 +1,32 @@
+#N canvas 276 78 450 335 10;
+#X declare -lib xeq/xeq;
+#X obj 294 293 declare -lib xeq/xeq;
+#X msg 35 112 host \$1-var;
+#X obj 35 94 \$0;
+#X obj 35 78 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X obj 11 115 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X obj 11 279 print;
+#X msg 276 209 mfread mf/kanon.mid 1;
+#X msg 65 157 template aSym;
+#X msg 69 181 scale 1 2 3;
+#X text 34 8 xeq_data;
+#X text 70 31 send a sequence to a data canvas according to the following
+template (all fields are float atoms): x y dx dy velocity time channel
+;
+#X obj 276 241 xeq \$0-var;
+#X obj 11 243 xeq_data \$0-var a b;
+#X msg 57 136 data s;
+#X text 166 134 sets x_dsym with s and x_target with s_thing;
+#X text 176 154 sets x_tsym;
+#X text 169 179 sets x_tcoef \, x_pcoef and x_vcoef;
+#X connect 1 0 12 0;
+#X connect 2 0 1 0;
+#X connect 3 0 2 0;
+#X connect 4 0 12 0;
+#X connect 6 0 11 0;
+#X connect 7 0 12 0;
+#X connect 8 0 12 0;
+#X connect 12 0 5 0;
+#X connect 13 0 12 0;

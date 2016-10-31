@@ -1,8 +1,0 @@
-LIB_OBJECTS = \
-sq.o \
-bifi.o \
-mifi.o \
-mfbb.o \
-dict.o \
-hyphen.o \
-text.o

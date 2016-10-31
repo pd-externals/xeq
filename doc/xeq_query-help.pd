@@ -1,0 +1,53 @@
+#N canvas 1 534 551 459 10;
+#X declare -lib xeq/xeq;
+#X obj 298 365 declare -lib xeq/xeq;
+#X msg 247 300 edit;
+#X msg 305 300 editok;
+#X msg 231 270 mfread mf/kanon.mid -track;
+#X obj 231 340 xeq \$0-x;
+#X obj 87 300 xeq_query \$0-x;
+#X obj 87 343 print;
+#X msg 101 183 tracks;
+#X msg 132 249 natoms;
+#X text 11 45 A reporting tool. Selector of any message it sends is
+the selector of a quering message. Output messages may be filtered
+through `route'.;
+#X text 16 11 xeq_query;
+#X msg 113 205 transpo;
+#X msg 126 227 tempo;
+#X msg 185 190 status;
+#X msg 13 161 host \$1-x;
+#X msg 87 161 host \$1-y;
+#X obj 87 141 \$0;
+#X obj 87 123 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X obj 13 141 \$0;
+#X obj 13 123 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X msg 421 214 tempo 0.9;
+#X msg 341 213 transpo 2;
+#X msg 255 233 tracks 2:3;
+#X msg 255 214 tracks all;
+#X msg 422 235 tempo 1.1;
+#X msg 342 234 transpo -1;
+#X connect 1 0 4 0;
+#X connect 2 0 4 0;
+#X connect 3 0 4 0;
+#X connect 5 0 6 0;
+#X connect 7 0 5 0;
+#X connect 8 0 5 0;
+#X connect 11 0 5 0;
+#X connect 12 0 5 0;
+#X connect 13 0 5 0;
+#X connect 14 0 5 0;
+#X connect 15 0 5 0;
+#X connect 16 0 15 0;
+#X connect 17 0 16 0;
+#X connect 18 0 14 0;
+#X connect 19 0 18 0;
+#X connect 20 0 4 0;
+#X connect 21 0 4 0;
+#X connect 22 0 4 0;
+#X connect 23 0 4 0;
+#X connect 24 0 3 0;
+#X connect 25 0 3 0;

@@ -389,6 +389,7 @@ t_mifi_stream *mfbb_make_stream(t_binbuf *x, t_squtt *tt, int flags)
     }
     return (stp);
 makefailed:
+    printf("mfbb_make_stream; failed to make stream or iterator\n");
     if (stp) mifi_stream_free(stp);
     return (0);
 }
@@ -477,11 +478,12 @@ int mfbb_read(t_binbuf *x, const char *filename, const char *dirname,
     post("finished reading %d events from midifile", stp->s_nevents);
 #endif
     result = 0;  /* success */
+    return (result);
 readfailed:
     if (stp)
     {
 	mifi_read_end(stp);
-	mifi_stream_free(stp);
+//	mifi_stream_free(stp);
     }
     return (result);
 }
@@ -548,7 +550,7 @@ writefailed:
     if (stp)
     {
 	mifi_write_end(stp);
-	mifi_stream_free(stp);
+//	mifi_stream_free(stp);
     }
     return (result);
 }
